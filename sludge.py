@@ -15,20 +15,10 @@ MATRIX_PROCESSES = ["p1", "p2a", "p2b", "p2c", "p3a", "p3b", "p3c", "p4",
                     "p5", "p6", "p7", "p8", "p9"]
 MATRIX_COMPOSITION = ["ThOD", "Nitrogen", "Ionic Charge"]
 
-def build_petersen_matrix(x2: list, y2: list,
-                          x3: list, y3: list) -> np.ndarray:
+
+def build_petersen_matrix() -> np.ndarray:
     """Petersen Matrix
 
-    Parameters
-    ----------
-    x2: list
-        Fraction of oxygen used for aerboic growth of S, BAP, and UAP
-    y2: list
-        Fraction of NH used for aerboic growth of S, BAP, and UAP 
-    x3: list
-        Fraction of NO used for anoxic growth of S, BAP, and UAP 
-    y3: list
-        Fraction of NH used for anoxic growth of S, BAP, and UAP 
     Output
     ------
     m: np.ndarray
@@ -36,10 +26,6 @@ def build_petersen_matrix(x2: list, y2: list,
     """
 
     m = np.zeros((13, 17))
-    x2a, x2b, x2c = x2
-    y2a, y2b, y2c = y2
-    x3a, x3b, x3c = x3
-    y3a, y3b, y3c = y3
 
     # Ammonification
     m[0, 13] = 1
@@ -156,43 +142,41 @@ def build_composition_matrix():
     m[2, :] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1/14, 0, 1/14, 0, 0, -1]
     return(m)
 
+
 # Process Rate Equations
-def p1(T: Union[float, pint.Quantity], S_ND: Union[float, pint.Quantity],
-       X_H: Union[float, pint.Quantity]) -> float:
+def p1(S_ND: pint.Quantity, X_H: pint.Quantity) -> pint.Quantity:
     """Ammonification
 
     Parameters
     ----------
-    T: float | pint.Quantity
-        Temperature of liquid [degC]
-    S_ND: float | pint.Quantity
+    S_ND: pint.Quantity
         Concentration of soluble biodegradable organic Nitrogen [g / m**3]
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     p = k_a * S_ND * X_H
     return(p)
 
 
-def p2a(S_O: Union[float, pint.Quantity], S_S: Union[float, pint.Quantity],
-        X_H: Union[float, pint.Quantity]) -> float:
+def p2a(S_O: pint.Quantity, S_S: pint.Quantity,
+        X_H: pint.Quantity) -> pint.Quantity:
     """Aerobic growth on S_S
 
     Parameters
     ----------
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    S_S: float | pint.Quantity
+    S_S: pint.Quantity
         Concentration of substrate
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n = S_S * S_O * X_H
@@ -201,26 +185,25 @@ def p2a(S_O: Union[float, pint.Quantity], S_S: Union[float, pint.Quantity],
     return(p)
 
 
-def p2b(T: Union[float, pint.Quantity], S_BAP: Union[float, pint.Quantity],
-        S_O: Union[float, pint.Quantity], S_ALK: Union[float, pint.Quantity],
-        X_H: Union[float, pint.Quantity]) -> float:
+def p2b(T: pint.Quantity, S_BAP: pint.Quantity, S_O: pint.Quantity,
+        S_ALK: pint.Quantity, X_H: pint.Quantity) -> pint.Quantity:
     """Aerobic growth on S_BAP
 
     Parameters
     ----------
-    T: float | pint.Quantity
+    T: pint.Quantity
         Temperature of liquid [degC]
-    S_BAP: float | pint.Quantity
+    S_BAP: pint.Quantity
         Concentration of BAP [gCOD / m**3]
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    S_ALK: float | pint.Quantity
+    S_ALK: pint.Quantity
         Concentration of ALK [g / m**3]
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n = S_BAP * S_O * S_ALK * X_H
@@ -229,26 +212,25 @@ def p2b(T: Union[float, pint.Quantity], S_BAP: Union[float, pint.Quantity],
     return(p)
 
 
-def p2c(T: Union[float, pint.Quantity], S_UAP: Union[float, pint.Quantity],
-        S_O: Union[float, pint.Quantity], S_ALK: Union[float, pint.Quantity],
-        X_H: Union[float, pint.Quantity]) -> float:
+def p2c(T: pint.Quantity, S_UAP: pint.Quantity, S_O: pint.Quantity,
+        S_ALK: pint.Quantity, X_H: pint.Quantity) -> pint.Quantity:
     """Aerobic growth on S_UAP
 
     Parameters
     ----------
-    T: float | pint.Quantity
+    T: pint.Quantity
         Temperature of liquid [degC]
-    S_UAP: float | pint.Quantity
+    S_UAP: pint.Quantity
         Concentration of UAP [gCOD / m**3]
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    S_ALK: float | pint.Quantity
+    S_ALK: pint.Quantity
         Concentration of ALK [g / m**3]
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n = S_UAP * S_O * S_ALK * X_H
@@ -257,24 +239,23 @@ def p2c(T: Union[float, pint.Quantity], S_UAP: Union[float, pint.Quantity],
     return(p)
 
 
-def p3a(S_O: Union[float, pint.Quantity], S_NO: Union[float, pint.Quantity],
-        S_S: Union[float, pint.Quantity],
-        X_H: Union[float, pint.Quantity]) -> float:
+def p3a(S_O: pint.Quantity, S_NO: pint.Quantity, S_S: pint.Quantity,
+        X_H: pint.Quantity) -> pint.Quantity:
     """Anoxic growth on S_S
 
     Parameters
     ----------
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    S_NO: float | pint.Quantity
+    S_NO: pint.Quantity
         Concentration of NO [g / m**3]
-    S_S: float | pint.Quantity
+    S_S: pint.Quantity
         Concentration of substrate
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n = S_S * K_OH * S_NO * X_H
@@ -283,29 +264,28 @@ def p3a(S_O: Union[float, pint.Quantity], S_NO: Union[float, pint.Quantity],
     return(p)
 
 
-def p3b(T: Union[float, pint.Quantity], S_BAP: Union[float, pint.Quantity],
-        S_O: Union[float, pint.Quantity], S_NO: Union[float, pint.Quantity],
-        S_ALK: Union[float, pint.Quantity],
-        X_H: Union[float, pint.Quantity]) -> float:
+def p3b(T: pint.Quantity, S_BAP: pint.Quantity, S_O: pint.Quantity,
+        S_NO: pint.Quantity, S_ALK: pint.Quantity,
+        X_H: pint.Quantity) -> pint.Quantity:
     """Anoxic growth on S_BAP
 
     Parameters
     ----------
-    T: float | pint.Quantity
+    T: pint.Quantity
         Temperature of liquid [degC]
-    S_BAP: float | pint.Quantity
+    S_BAP: pint.Quantity
         Concentration of BAP [gCOD / m**3]
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    S_NO: float | pint.Quantity
+    S_NO: pint.Quantity
         Concentration of NO [g / m**3]
-    S_ALK: float | pint.Quantity
+    S_ALK: pint.Quantity
         Concentration of ALK [g / m**3]
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n = S_BAP * K_OH * S_NO * S_ALK * X_H
@@ -314,29 +294,28 @@ def p3b(T: Union[float, pint.Quantity], S_BAP: Union[float, pint.Quantity],
     return(p)
 
 
-def p3c(T: Union[float, pint.Quantity], S_UAP: Union[float, pint.Quantity],
-        S_O: Union[float, pint.Quantity], S_NO: Union[float, pint.Quantity],
-        S_ALK: Union[float, pint.Quantity],
-        X_H: Union[float, pint.Quantity]) -> float:
+def p3c(T: pint.Quantity, S_UAP: pint.Quantity, S_O: pint.Quantity,
+        S_NO: pint.Quantity, S_ALK: pint.Quantity,
+        X_H: pint.Quantity) -> pint.Quantity:
     """Anoxic growth on S_UAP
 
     Parameters
     ----------
-    T: float | pint.Quantity
+    T: pint.Quantity
         Temperature of liquid [degC]
-    S_UAP: float | pint.Quantity
+    S_UAP: pint.Quantity
         Concentration of UAP [gCOD / m**3]
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    S_NO: float | pint.Quantity
+    S_NO: pint.Quantity
         Concentration of NO [g / m**3]
-    S_ALK: float | pint.Quantity
+    S_ALK: pint.Quantity
         Concentration of ALK [g / m**3]
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n = S_UAP * K_OH * S_NO * S_ALK * X_H
@@ -345,106 +324,103 @@ def p3c(T: Union[float, pint.Quantity], S_UAP: Union[float, pint.Quantity],
     return(p)
 
 
-def p4(X_H: Union[float, pint.Quantity]) -> float:
+def p4(X_H: pint.Quantity) -> pint.Quantity:
     """Decay of heterotrophs
 
     Parameters
     ----------
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     p = b_H * X_H
     return(p)
 
 
-def p5(S_O: Union[float, pint.Quantity], S_NO: Union[float, pint.Quantity],
-       X_S: Union[float, pint.Quantity],
-       X_H: Union[float, pint.Quantity]) -> float:
+def p5(S_O: pint.Quantity, S_NO: pint.Quantity, X_S: pint.Quantity,
+       X_H: pint.Quantity) -> pint.Quantity:
     """Hydrolysis of organic compounds
 
     Parameters
     ----------
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    S_NO: float | pint.Quantity
+    S_NO: pint.Quantity
         Concentration of NO [g / m**3]
-    X_S: float | pint.Quantity
+    X_S: pint.Quantity
         Concentration of substrate [g / m**3]
-    X_H: float | pint.Quantity
+    X_H: pint.Quantity
         Concentration of active heterotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n1 = X_S
     n2 = S_O
     n3 = K_OH * S_NO
-    d1 = K_X * (X_S / X_H)
+    d1 = K_X + (X_S / X_H)
     d2 = K_OH + S_O
     d3 = (K_OH + S_O) * (K_NO + S_NO)
     p = k_h * (n1 / d1) * (n2 / d2 + eta_h * n3 / d3)
     return(p)
 
 
-def p6(S_O: Union[float, pint.Quantity], S_NO: Union[float, pint.Quantity],
-       X_S: Union[float, pint.Quantity],
-       X_H: Union[float, pint.Quantity],
-       X_ND: Union[float, pint.Quantity]) -> float:
+def p6(S_O: pint.Quantity, S_NO: pint.Quantity, X_S: pint.Quantity,
+       X_H: pint.Quantity, X_ND: pint.Quantity) -> pint.Quantity:
     """Hydrolysis of organic Nitrogen
 
     Parameters
     ----------
-    X_ND: float | pint.Quantity
+    X_ND: pint.Quantity
         Concentration of biodegradable Nitrogen [g / m**3]
-    X_S: float | pint.Quantity
+    X_S: pint.Quantity
         Concentration of substrate [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     p = p5(S_O, S_NO, X_S, X_H) * (X_ND / X_S)
     return(p)
 
 
-def p7(T: Union[float, pint.Quantity], X_EPS: Union[float, pint.Quantity]):
+def p7(T: pint.Quantity, X_EPS: pint.Quantity) -> pint.Quantity:
     """Hydrolysis of X_EPS
 
     Parameters
     ----------
-    T: float | pint.Quantity
+    T: pint.Quantity
         Temperature of liquid [degC]
-    X_EPS: float | pint.Quantity
+    X_EPS: pint.Quantity
         Concentration of EPS [gCOD / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     p = exp(-0.11 * (20 - T)) * k_hEPS * X_EPS
     return(p)
 
 
-def p8(S_NH: Union[float, pint.Quantity], S_O: Union[float, pint.Quantity],
-       X_A: Union[float, pint.Quantity]) -> float:
+def p8(S_NH: pint.Quantity, S_O: pint.Quantity,
+       X_A: pint.Quantity) -> pint.Quantity:
     """Aerobic growth of autotrophs
 
     Parameters
     ----------
-    S_NH: float | pint.Quantity
+    S_NH: pint.Quantity
         Concentration of ammonia and ammonium [g / m**3]
-    S_O: float | pint.Quantity
+    S_O: pint.Quantity
         Concentration of Oxygen [g / m**3]
-    X_A: float | pint.Quantity
+    X_A: pint.Quantity
         Concentration of autotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     n = S_NH * S_O * X_A
@@ -453,16 +429,16 @@ def p8(S_NH: Union[float, pint.Quantity], S_O: Union[float, pint.Quantity],
     return(p)
 
 
-def p9(X_A: Union[float, pint.Quantity]) -> float:
+def p9(X_A: pint.Quantity) -> pint.Quantity:
     """Decay of autotrophs
 
     Parameters
     ----------
-    X_A: float | pint.Quantity
+    X_A: pint.Quantity
         Concentration of autotrophs [g / m**3]
     Output
     ------
-    p: float
+    p: pint.Quantity
         Process rate [gCOD / m**3 / day]
     """
     p = b_A * X_A
