@@ -51,7 +51,7 @@ R_m = 3.0e12 * (1 / ureg.m)
 # Concentration of UAP and concentration of BAP retention on the membrane
 f_M = 0.5 * (1)
 # Flux dependency coeﬃcient in the irreversible fouling equation
-b = 6.8e-2 * (ureg.h * ureg.m ** 2 / ureg.L)
+b = 6.8e-2 * (ureg.hour * ureg.m ** 2 / ureg.L)
 # Threshold pressure below which no cake compression occurs
 Delta_P_crit = 30000 * (ureg.Pa)
 # Cake compressibility factor
@@ -93,8 +93,12 @@ mu_H = 6.0 * (1 / ureg.day)
 
 # Parameters from (Janus, 2013)
 k_i = 1e11 * (ureg.m / ureg.kg)
+a = 2.397e12 * (ureg.m / ureg.kg) / k_i  # p.191
 k_r = 200 * (1 / ureg.day)
 mu = 1.002e-3 * (ureg.Pa * ureg.s)
+membrane_density = 46.2 * (ureg.m ** 2 / ureg.m ** 3)
+# p.193 k*gamma^n, 86400 used to turn days into seconds
+back_transport_coefficient = 0.07 * ((155/86400) ** 1.5) * (ureg.m / ureg.s)
 
 # Same reference but from appendix
 x2a = - (1 - Y_H - gamma_H) / Y_H

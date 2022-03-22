@@ -1,5 +1,40 @@
-"""
-Code for the activated sludge model
+"""The activated sludge model
+
+All process methods (p1, p2a, p2b, p2c, p3a, p3b, p3c, p4, p5, p6, p7, p8, p9)
+will have inputs in terms of concentrations or temperature in pint.Quantity
+objects and will output rates in units of ([mass] / [volume] / [time]).
+
+Methods
+-------
+build_petersen_matrix -> np.ndarray
+    Using parameters from the parameters.py file this method will create the
+    Petersen matrix.
+p1 -> pint.Quantity
+    Ammonification
+p2a -> pint.Quantity
+    Aerobic growth on S_S
+p2b -> pint.Quantity
+    Aerobic growth on S_BAP
+p2c -> pint.Quantity
+    Aerobic growth on S_UAP
+p3a -> pint.Quantity
+    Anoxic growth on S_S
+p3b -> pint.Quantity
+    Anoxic growth on S_BAP
+p3c -> pint.Quantity
+    Anoxic growth on S_UAP
+p4 -> pint.Quantity
+    Decay of heterotrophs
+p5 -> pint.Quantity
+    Hydrolysis of organic compounds
+p6 -> pint.Quantity
+    Hydrolysis of organic Nitrogen
+p7 -> pint.Quantity
+    Hydrolysis of X_EPS
+p8 -> pint.Quantity
+    Aerobic growth of autotrophs
+p9 -> pint.Quantity
+    Decay of autotrophs
 """
 from math import exp
 import pint
@@ -145,40 +180,14 @@ def build_composition_matrix():
 
 # Process Rate Equations
 def p1(S_ND: pint.Quantity, X_H: pint.Quantity) -> pint.Quantity:
-    """Ammonification
-
-    Parameters
-    ----------
-    S_ND: pint.Quantity
-        Concentration of soluble biodegradable organic Nitrogen [g / m**3]
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Ammonification"""
     p = k_a * S_ND * X_H
     return(p)
 
 
 def p2a(S_O: pint.Quantity, S_S: pint.Quantity,
         X_H: pint.Quantity) -> pint.Quantity:
-    """Aerobic growth on S_S
-
-    Parameters
-    ----------
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    S_S: pint.Quantity
-        Concentration of substrate
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Aerobic growth on S_S"""
     n = S_S * S_O * X_H
     d = (K_S + S_S) * (K_OH + S_O)
     p = mu_H * n / d
@@ -187,25 +196,8 @@ def p2a(S_O: pint.Quantity, S_S: pint.Quantity,
 
 def p2b(T: pint.Quantity, S_BAP: pint.Quantity, S_O: pint.Quantity,
         S_ALK: pint.Quantity, X_H: pint.Quantity) -> pint.Quantity:
-    """Aerobic growth on S_BAP
-
-    Parameters
-    ----------
-    T: pint.Quantity
-        Temperature of liquid [degC]
-    S_BAP: pint.Quantity
-        Concentration of BAP [gCOD / m**3]
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    S_ALK: pint.Quantity
-        Concentration of ALK [g / m**3]
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Aerobic growth on S_BAP"""
+    T = T.to(ureg.degC).magnitude
     n = S_BAP * S_O * S_ALK * X_H
     d = (K_BAP + S_BAP) * (K_OH + S_O) * (K_ALKH + S_ALK)
     p = exp(-0.069 * (20 - T)) * mu_BAP * n / d
@@ -214,25 +206,8 @@ def p2b(T: pint.Quantity, S_BAP: pint.Quantity, S_O: pint.Quantity,
 
 def p2c(T: pint.Quantity, S_UAP: pint.Quantity, S_O: pint.Quantity,
         S_ALK: pint.Quantity, X_H: pint.Quantity) -> pint.Quantity:
-    """Aerobic growth on S_UAP
-
-    Parameters
-    ----------
-    T: pint.Quantity
-        Temperature of liquid [degC]
-    S_UAP: pint.Quantity
-        Concentration of UAP [gCOD / m**3]
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    S_ALK: pint.Quantity
-        Concentration of ALK [g / m**3]
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Aerobic growth on S_UAP"""
+    T = T.to(ureg.degC).magnitude
     n = S_UAP * S_O * S_ALK * X_H
     d = (K_UAP + S_UAP) * (K_OH + S_O) * (K_ALKH + S_ALK)
     p = exp(-0.069 * (20 - T)) * mu_UAP * n / d
@@ -241,23 +216,7 @@ def p2c(T: pint.Quantity, S_UAP: pint.Quantity, S_O: pint.Quantity,
 
 def p3a(S_O: pint.Quantity, S_NO: pint.Quantity, S_S: pint.Quantity,
         X_H: pint.Quantity) -> pint.Quantity:
-    """Anoxic growth on S_S
-
-    Parameters
-    ----------
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    S_NO: pint.Quantity
-        Concentration of NO [g / m**3]
-    S_S: pint.Quantity
-        Concentration of substrate
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Anoxic growth on S_S"""
     n = S_S * K_OH * S_NO * X_H
     d = (K_S + S_S) * (K_OH + S_O) * (K_NO + S_NO)
     p = mu_H * eta_g * n / d
@@ -267,27 +226,8 @@ def p3a(S_O: pint.Quantity, S_NO: pint.Quantity, S_S: pint.Quantity,
 def p3b(T: pint.Quantity, S_BAP: pint.Quantity, S_O: pint.Quantity,
         S_NO: pint.Quantity, S_ALK: pint.Quantity,
         X_H: pint.Quantity) -> pint.Quantity:
-    """Anoxic growth on S_BAP
-
-    Parameters
-    ----------
-    T: pint.Quantity
-        Temperature of liquid [degC]
-    S_BAP: pint.Quantity
-        Concentration of BAP [gCOD / m**3]
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    S_NO: pint.Quantity
-        Concentration of NO [g / m**3]
-    S_ALK: pint.Quantity
-        Concentration of ALK [g / m**3]
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Anoxic growth on S_BAP"""
+    T = T.to(ureg.degC).magnitude
     n = S_BAP * K_OH * S_NO * S_ALK * X_H
     d = (K_BAP + S_BAP) * (K_OH + S_O) * (K_NO + S_NO) * (K_ALKH + S_ALK)
     p = exp(-0.069 * (20 - T)) * mu_BAP * eta_g * n / d
@@ -297,27 +237,8 @@ def p3b(T: pint.Quantity, S_BAP: pint.Quantity, S_O: pint.Quantity,
 def p3c(T: pint.Quantity, S_UAP: pint.Quantity, S_O: pint.Quantity,
         S_NO: pint.Quantity, S_ALK: pint.Quantity,
         X_H: pint.Quantity) -> pint.Quantity:
-    """Anoxic growth on S_UAP
-
-    Parameters
-    ----------
-    T: pint.Quantity
-        Temperature of liquid [degC]
-    S_UAP: pint.Quantity
-        Concentration of UAP [gCOD / m**3]
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    S_NO: pint.Quantity
-        Concentration of NO [g / m**3]
-    S_ALK: pint.Quantity
-        Concentration of ALK [g / m**3]
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Anoxic growth on S_UAP"""
+    T = T.to(ureg.degC).magnitude
     n = S_UAP * K_OH * S_NO * S_ALK * X_H
     d = (K_UAP + S_UAP) * (K_OH + S_O) * (K_NO + S_NO) * (K_ALKH + S_ALK)
     p = exp(-0.069 * (20 - T)) * mu_UAP * eta_g * n / d
@@ -325,40 +246,14 @@ def p3c(T: pint.Quantity, S_UAP: pint.Quantity, S_O: pint.Quantity,
 
 
 def p4(X_H: pint.Quantity) -> pint.Quantity:
-    """Decay of heterotrophs
-
-    Parameters
-    ----------
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Decay of heterotrophs"""
     p = b_H * X_H
     return(p)
 
 
 def p5(S_O: pint.Quantity, S_NO: pint.Quantity, X_S: pint.Quantity,
        X_H: pint.Quantity) -> pint.Quantity:
-    """Hydrolysis of organic compounds
-
-    Parameters
-    ----------
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    S_NO: pint.Quantity
-        Concentration of NO [g / m**3]
-    X_S: pint.Quantity
-        Concentration of substrate [g / m**3]
-    X_H: pint.Quantity
-        Concentration of active heterotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Hydrolysis of organic compounds"""
     n1 = X_S
     n2 = S_O
     n3 = K_OH * S_NO
@@ -371,58 +266,21 @@ def p5(S_O: pint.Quantity, S_NO: pint.Quantity, X_S: pint.Quantity,
 
 def p6(S_O: pint.Quantity, S_NO: pint.Quantity, X_S: pint.Quantity,
        X_H: pint.Quantity, X_ND: pint.Quantity) -> pint.Quantity:
-    """Hydrolysis of organic Nitrogen
-
-    Parameters
-    ----------
-    X_ND: pint.Quantity
-        Concentration of biodegradable Nitrogen [g / m**3]
-    X_S: pint.Quantity
-        Concentration of substrate [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Hydrolysis of organic Nitrogen"""
     p = p5(S_O, S_NO, X_S, X_H) * (X_ND / X_S)
     return(p)
 
 
 def p7(T: pint.Quantity, X_EPS: pint.Quantity) -> pint.Quantity:
-    """Hydrolysis of X_EPS
-
-    Parameters
-    ----------
-    T: pint.Quantity
-        Temperature of liquid [degC]
-    X_EPS: pint.Quantity
-        Concentration of EPS [gCOD / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Hydrolysis of X_EPS"""
+    T = T.to(ureg.degC).magnitude
     p = exp(-0.11 * (20 - T)) * k_hEPS * X_EPS
     return(p)
 
 
 def p8(S_NH: pint.Quantity, S_O: pint.Quantity,
        X_A: pint.Quantity) -> pint.Quantity:
-    """Aerobic growth of autotrophs
-
-    Parameters
-    ----------
-    S_NH: pint.Quantity
-        Concentration of ammonia and ammonium [g / m**3]
-    S_O: pint.Quantity
-        Concentration of Oxygen [g / m**3]
-    X_A: pint.Quantity
-        Concentration of autotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Aerobic growth of autotrophs"""
     n = S_NH * S_O * X_A
     d = (K_NH + S_NH) * (K_OA + S_O)
     p = mu_A * n / d
@@ -430,16 +288,6 @@ def p8(S_NH: pint.Quantity, S_O: pint.Quantity,
 
 
 def p9(X_A: pint.Quantity) -> pint.Quantity:
-    """Decay of autotrophs
-
-    Parameters
-    ----------
-    X_A: pint.Quantity
-        Concentration of autotrophs [g / m**3]
-    Output
-    ------
-    p: pint.Quantity
-        Process rate [gCOD / m**3 / day]
-    """
+    """Decay of autotrophs"""
     p = b_A * X_A
     return(p)
