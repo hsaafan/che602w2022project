@@ -13,6 +13,7 @@ starting_state = {
     'alpha_c': 0 * (ureg.m / ureg.kg),
     'm_rback': 0 * (ureg.kg / ureg.m ** 2 / ureg.s),
     'tau_w': 0 * (ureg.Pa),
+    'TMP': 0 * (ureg.Pa),
     # Influent concentrations (From (Janus 2013, p.264))
     'in_S_I': 9.00 * (ureg.gCOD / ureg.m ** 3),
     'in_S_S': 69.50 * (ureg.gCOD / ureg.m ** 3),
@@ -24,7 +25,7 @@ starting_state = {
     'in_S_BAP': 21.00 * (ureg.gCOD / ureg.m ** 3),
     'in_X_A': 0 * (ureg.gCOD / ureg.m ** 3),
     'in_X_P': 0 * (ureg.gCOD / ureg.m ** 3),
-    'in_S_O': 30 * (ureg.gCOD / ureg.m ** 3),
+    'in_S_O': 0 * (ureg.gCOD / ureg.m ** 3),
     'in_S_NO': 0 * (ureg.gN / ureg.m ** 3),
     'in_S_N2': 0 * (ureg.gN / ureg.m ** 3),
     'in_S_NH': 31.56 * (ureg.gN / ureg.m ** 3),

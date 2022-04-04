@@ -61,7 +61,8 @@ class Membrane:
         new_state['R_t'] = R_m + new_state['R_i'] + new_state['R_r']
 
         Delta_P = J * (mu * new_state['R_t'])
-        # Model taken from () with parameters from p.193
+        new_state['TMP'] = Delta_P
+        # Model taken from (Janus, 2013) with parameters from p.193
         new_state['m_rback'] = back_transport_coefficient * state['X_MLSS']
         # new_state['alpha_c'] = alpha_c0 * (Delta_P / Delta_P_crit) ** 2
         new_state['alpha_c'] = 1.12 * (ureg.m / ureg.kg)  # (Janus, 2013 p.280)

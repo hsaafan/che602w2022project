@@ -12,7 +12,7 @@ def main(time: pint.Quantity, state: dict):
     while t < time:
         days = t.to('day').magnitude
         print(f'\r{days:.3f} days                     ', end='')
-        model.step_model(t_step)
+        state = model.step_model(t_step)
         t += t_step
 
 

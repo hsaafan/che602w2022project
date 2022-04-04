@@ -69,4 +69,5 @@ class MBRModel:
         self.state = self.bioreactor.step(t_step, self.state)
         self.state = self.membrane.step(t_step, self.state)
         self.state['time'] = self.state['time'] + t_step
-        self.record_state()
+        # self.record_state()
+        return(self.state)
